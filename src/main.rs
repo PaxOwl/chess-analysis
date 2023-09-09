@@ -1,4 +1,5 @@
 mod file_handling;
+mod plot;
 
 use std::collections::HashMap;
 
@@ -19,6 +20,16 @@ fn hashmap_to_sorted_vector(hash: &HashMap<i32, Vec<i32>>) -> Vec<(i32, Vec<i32>
     }
 
     return sorted_vec
+}
+
+fn pretty_printer(hash_vec: &Vec<(i32, Vec<i32>)>) {
+    println!("    --------------------");
+    println!("    | Time (s) | Games |");
+    println!("    --------------------");
+    for (sorted_time, sorted_move) in hash_vec {
+        println!("    | {:>8} | {:>5} |", sorted_time, sorted_move.len());
+    }
+    println!("    --------------------");
 }
 
 fn main() {
@@ -50,8 +61,7 @@ fn main() {
     }
 
     let time_moves:Vec<(i32, Vec<i32>)> = hashmap_to_sorted_vector(&game_timers);
+    pretty_printer(&time_moves);
+    plot::time_histogram(&time_moves);
 
-    for (sorted_time, sorted_move) in &time_moves {
-        println!("{} - {}", sorted_time, sorted_move.len());
-    }
 }
