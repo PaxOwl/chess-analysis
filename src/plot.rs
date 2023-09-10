@@ -1,6 +1,6 @@
 use plotters::prelude::*;
 
-pub(crate) fn time_histogram(sorted_vec: &Vec<(i32, Vec<i32>)>) {
+pub fn time_histogram(sorted_vec: &Vec<(i32, Vec<i32>)>) {
     let mut data: Vec<(i32, i32)> = Vec::new();
 
     for (time, games) in sorted_vec {
@@ -9,9 +9,9 @@ pub(crate) fn time_histogram(sorted_vec: &Vec<(i32, Vec<i32>)>) {
         }
     }
 
-    for (item, value) in &data {
-        println!("{} {}", item, value);
-    }
+//    for (item, value) in &data {
+//        println!("{item} {value}");
+//    }
     let drawing_area = SVGBackend::new("histogram.svg", (900, 600)).into_drawing_area();
     drawing_area.fill(&WHITE).unwrap();
 
