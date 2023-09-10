@@ -26,6 +26,7 @@ fn hashmap_to_sorted_vector(hash: &HashMap<i32, Vec<i32>>) -> Vec<(i32, Vec<i32>
 fn main() {
     let mut game_timers:HashMap<i32, Vec<i32>> = HashMap::new();
     let mut time: i32 = 0;
+    // let mut game_count: i32 = 0;
     if let Ok(lines) = file_handling::read_lines(
         // "./res/lichess_db_standard_rated_2016-02.pgn"
         "./res/reduced_data.pgn"
@@ -43,7 +44,9 @@ fn main() {
                 if line_content.starts_with('1') {
                     let moves: i32 = file_handling::extract_number_of_moves(&line_content);
                     game_timers.entry(time).or_insert_with(Vec::new);
-                    game_timers.get_mut(&time).expect("REASON").push(moves)
+                    game_timers.get_mut(&time).expect("REASON").push(moves);
+                    // game_count += 1;
+                    // println!("Game {}", game_count);
                 }
             }
         }
@@ -51,23 +54,35 @@ fn main() {
 
     let time_moves:Vec<(i32, Vec<i32>)> = hashmap_to_sorted_vector(&game_timers);
     // plot::time_histogram(&time_moves);
-    let mut table_data: Vec<Vec<f32>> = Vec::new();
+    let mut table_data: Vec<Vec<i32>> = Vec::new();
     let mut headers: Vec<String> = Vec::new();
-    for (time, moves) in time_moves {
-        let mut avg: f32 = 0.;
+    for (time, mut moves) in time_moves {
+        let mut avg: i32 = 0;
+        let mut std: i32 = 0;
         for i in &moves {
-            avg += *i as f32;
+            avg += *i as i32;
         }
-        avg /= moves.len() as f32;
-        let mut temp_vec: Vec<f32> = Vec::new();
-        temp_vec.push(time as f32);
-        temp_vec.push(moves.len() as f32);
+        avg /= moves.len() as i32;
+        for i in &moves {
+            std += (i - avg).pow(2);
+        }
+        std = (std as f32 / avg as f32).sqrt() as i32;
+        moves.sort();
+        let median = moves[moves.len() / 2];
+        
+        let mut temp_vec: Vec<i32> = Vec::new();
+        temp_vec.push(time);
+        temp_vec.push(moves.len() as i32);
         temp_vec.push(avg);
+        temp_vec.push(median);
+        temp_vec.push(std);
         table_data.push(temp_vec);
     }
-    headers.push(String::from("Times (s)"));
+    headers.push(String::from("Time (s)"));
     headers.push(String::from("Games"));
-    headers.push(String::from("Average moves"));
+    headers.push(String::from("Average"));
+    headers.push(String::from("Median"));
+    headers.push(String::from("Std"));
     pretty_printers::table_printer(headers, table_data);
 
 }
