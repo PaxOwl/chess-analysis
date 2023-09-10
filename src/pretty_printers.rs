@@ -47,8 +47,6 @@ pub fn table_printer<T: ToString>(headers: Vec<String>, data: Vec<Vec<T>>) {
         content.push(line_content.clone());
     }
 
-    println!("rows: {}", nrows);
-    println!("cols: {}", ncols);
     println!("{}", top_row);
     println!("{}", headers_row);
     println!("{}", mid_row);

@@ -1,6 +1,6 @@
 mod file_handling;
 mod pretty_printers;
-mod plot;
+// mod plot;
 
 use std::collections::HashMap;
 
@@ -21,16 +21,6 @@ fn hashmap_to_sorted_vector(hash: &HashMap<i32, Vec<i32>>) -> Vec<(i32, Vec<i32>
     }
 
     sorted_vec
-}
-
-fn pretty_printer(hash_vec: &Vec<(i32, Vec<i32>)>) {
-    println!("    ╭──────────┬───────╮");
-    println!("    │ Time (s) │ Games │");
-    println!("    ├──────────┼───────┤");
-    for (sorted_time, sorted_move) in hash_vec {
-        println!("    │ {:>8} │ {:>5} │", sorted_time, sorted_move.len());
-    }
-    println!("    ╰──────────────────╯");
 }
 
 fn main() {
@@ -60,17 +50,24 @@ fn main() {
     }
 
     let time_moves:Vec<(i32, Vec<i32>)> = hashmap_to_sorted_vector(&game_timers);
-//    pretty_printer(&time_moves);
-    plot::time_histogram(&time_moves);
-    let mut table_data: Vec<Vec<i32>> = Vec::new();
+    // plot::time_histogram(&time_moves);
+    let mut table_data: Vec<Vec<f32>> = Vec::new();
     let mut headers: Vec<String> = Vec::new();
+    for (time, moves) in time_moves {
+        let mut avg: f32 = 0.;
+        for i in &moves {
+            avg += *i as f32;
+        }
+        avg /= moves.len() as f32;
+        let mut temp_vec: Vec<f32> = Vec::new();
+        temp_vec.push(time as f32);
+        temp_vec.push(moves.len() as f32);
+        temp_vec.push(avg);
+        table_data.push(temp_vec);
+    }
     headers.push(String::from("Times (s)"));
     headers.push(String::from("Games"));
-    for i in 1..10 {
-        let timers: Vec<i32> = Vec::from([i, i * 3]);
-        table_data.push(timers);
-        println!("{}", i);
-    }
+    headers.push(String::from("Average moves"));
     pretty_printers::table_printer(headers, table_data);
 
 }
