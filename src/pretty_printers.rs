@@ -5,6 +5,19 @@ pub fn table_printer<T: ToString>(headers: Vec<String>, data: Vec<Vec<T>>) {
 
     let ncols: usize = headers.len();
     let nrows: usize = data.len();
+    let mut length: Vec<usize> = Vec::new();
+
+    for col in 0..ncols {
+        length.push(0);
+        if length[col] < headers[col].len() {
+            length[col] = headers[col].len();
+        }
+        for row in 0..nrows {
+            if length[col] < data[row][col].to_string().len() {
+                length[col] = data[row][col].to_string().len();
+            }
+        }
+    }
 
     // Building the table rows
     let mut top_row: String = String::from(outline.chars().nth(2).unwrap());
@@ -14,19 +27,14 @@ pub fn table_printer<T: ToString>(headers: Vec<String>, data: Vec<Vec<T>>) {
     let mut headers_row: String = String::from(outline.chars().nth(1).unwrap());
     let mut content: Vec<String> = Vec::new();
     for col in 0..ncols {
-        let mut length: usize = headers[col].len();
-        for row in 0..nrows {
-            if data[row][col].to_string().len() > length {
-                length = data[row][col].to_string().len();
-            }
-        }
-        for _ in 0..(length + 2) {
+        for _ in 0..(length[col] + 2) {
            top_row.push(outline.chars().nth(0).unwrap());
            mid_row.push(outline.chars().nth(0).unwrap());
            bot_row.push(outline.chars().nth(0).unwrap());
         }
+        let length_format: usize = length[col];
         headers_row.push(' ');
-        headers_row += &format!("{:>length$}", headers[col]);
+        headers_row += &format!("{:>length_format$}", headers[col]);
         headers_row.push(' ');
 
         if col != ncols - 1 {
@@ -44,9 +52,9 @@ pub fn table_printer<T: ToString>(headers: Vec<String>, data: Vec<Vec<T>>) {
         let mut line_content: String = String::from(outline.chars().nth(1).unwrap());
         for col in 0..ncols {
             let current = &data[row][col];
-            let length: usize = headers[col].len();
             line_content.push(' ');
-            line_content += &format!("{:>length$}", current.to_string());
+            let length_format: usize = length[col];
+            line_content += &format!("{:>length_format$}", current.to_string());
             line_content.push(' ');
             line_content.push(outline.chars().nth(1).unwrap());
         }

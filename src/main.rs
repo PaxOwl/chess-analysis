@@ -28,8 +28,8 @@ fn main() {
     let mut time: i32 = 0;
     // let mut game_count: i32 = 0;
     if let Ok(lines) = file_handling::read_lines(
-        // "./res/lichess_db_standard_rated_2016-02.pgn"
-        "./res/reduced_data.pgn"
+        "./res/lichess_db_standard_rated_2016-02.pgn"
+        // "./res/reduced_data.pgn"
     ) {
         for line in lines {
             if let Ok(line_content) = line {
@@ -43,6 +43,9 @@ fn main() {
                 }
                 if line_content.starts_with('1') {
                     let moves: i32 = file_handling::extract_number_of_moves(&line_content);
+                    if moves == 1 {
+                        continue;
+                    }
                     game_timers.entry(time).or_insert_with(Vec::new);
                     game_timers.get_mut(&time).expect("REASON").push(moves);
                     // game_count += 1;
@@ -58,15 +61,24 @@ fn main() {
     let mut headers: Vec<String> = Vec::new();
     for (time, mut moves) in time_moves {
         let mut avg: i32 = 0;
-        let mut std: i32 = 0;
+        let mut var: i32 = 0;
+        let mut min: i32 = 10000;
+        let mut max: i32 = 0;
         for i in &moves {
-            avg += *i as i32;
+            avg += *i;
+            if max < *i {
+                max = *i;
+            }
+            if min > *i {
+                min = *i;
+            }
         }
         avg /= moves.len() as i32;
         for i in &moves {
-            std += (i - avg).pow(2);
+            var += (i - avg).pow(2);
         }
-        std = (std as f32 / avg as f32).sqrt() as i32;
+        var /= moves.len() as i32;
+        let std: i32 = (var as f32).sqrt() as i32;
         moves.sort();
         let median = moves[moves.len() / 2];
         
@@ -75,14 +87,20 @@ fn main() {
         temp_vec.push(moves.len() as i32);
         temp_vec.push(avg);
         temp_vec.push(median);
+        temp_vec.push(var);
         temp_vec.push(std);
+        temp_vec.push(min);
+        temp_vec.push(max);
         table_data.push(temp_vec);
     }
     headers.push(String::from("Time (s)"));
     headers.push(String::from("Games"));
-    headers.push(String::from("Average"));
-    headers.push(String::from("Median"));
+    headers.push(String::from("Avg"));
+    headers.push(String::from("Med"));
+    headers.push(String::from("Var"));
     headers.push(String::from("Std"));
+    headers.push(String::from("Min"));
+    headers.push(String::from("Max"));
     pretty_printers::table_printer(headers, table_data);
 
 }
