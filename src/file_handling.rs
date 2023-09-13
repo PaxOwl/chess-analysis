@@ -47,13 +47,32 @@ pub fn get_time_control(line_content: &String) -> i32 {
     time
 }
 
+pub fn get_elo(line_content: &String) -> i32 {
+
+    // First instance of " character
+    let start_byte = line_content
+        .find('\"')
+        .unwrap_or(0);
+
+    // First instance of + character
+    let end_byte = line_content[start_byte + 1..]
+        .find('\"')
+        .unwrap_or(0);
+
+    // Retrieve the TimeControl value as a &str, convert it and store it as an f32 variable
+    let str_elo = &line_content[start_byte + 1..start_byte + end_byte + 1];
+    let elo: i32 = str_elo.parse().unwrap();
+
+    elo
+}
+
 /// Given an &String containing the information of a game, extract the total number of moves
 ///
 /// # Arguments
 ///
 /// `game_moves` - &String containing all the moves in the played game
 ///
-pub fn extract_number_of_moves(game_moves: &String) -> i32 {
+pub fn get_number_of_moves(game_moves: &String) -> i32 {
     let mut moves: i32 = 0;
 
     // Split the string at each space and store it in a collection
