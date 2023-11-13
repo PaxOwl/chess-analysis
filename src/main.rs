@@ -2,36 +2,17 @@ mod file_handling;
 mod pretty_printers;
 mod game;
 mod statistics;
+mod cluster;
 // mod plot;
 
 use std::collections::HashMap;
 
-fn hashmap_to_sorted_vector(hash: &HashMap<i32, Vec<i32>>) -> Vec<(i32, Vec<i32>)> {
-    // Convert the keys of the HashMap to a Vector
-    let mut hash_vec:Vec<i32> = Vec::new();
-    for (&key, _) in hash {
-        hash_vec.push(key);
-    }
-
-    // Sort the keys Vector
-    hash_vec.sort_unstable();
-
-    // Create a sorted Vector and assing the Vectors of values back to their key respective keys
-    let mut sorted_vec = Vec::new();
-    for index in &hash_vec {
-        sorted_vec.push((*index, hash[index].clone()));
-    }
-    sorted_vec
-}
-
 
 fn main() {
-    let mut game_timers:HashMap<i32, Vec<i32>> = HashMap::new();
+    let mut games_hashmap:HashMap<i32, cluster::Cluster> = HashMap::new();
     let mut time: i32 = 0;
-    let mut games: Vec<game::Game> = Vec::new();
     let mut current_game = game::Game::new();
     let mut game_count: i32 = 0;
-    let mut statistics: Vec<statistics::Statistics> = Vec::new();
     if let Ok(lines) = file_handling::read_lines(
         // "./res/lichess_db_standard_rated_2016-02.pgn"
         "./res/reduced_data.pgn"
@@ -40,11 +21,10 @@ fn main() {
             if let Ok(line_content) = line {
                 // Lecture du temps des joueurs pour la partie en cours de traitement
                 if line_content.contains("TimeControl") {
-                    if line_content.contains('-') {
-                        time = 0;
-                    }
-                    else {
-                        current_game.set_time_control(file_handling::get_time_control(&line_content));
+                    time = 0;
+                    if !line_content.contains('-') {
+                        time = file_handling::get_time_control(&line_content);
+                        current_game.set_time_control(time);
                     }
                 }
                 // Lecture de l'elo des blancs pour la partie en cours de traitement
@@ -62,18 +42,28 @@ fn main() {
                     if current_game.get_number_of_moves() == 1 {
                         continue;
                     }
-                    game_timers.entry(time).or_insert_with(Vec::new);
-                    game_timers
-                        .get_mut(&time)
-                        .expect("REASON")
-                        .push(current_game.get_number_of_moves());
                     game_count += 1;
                     current_game.set_id(game_count);
-                    games.push(current_game);
-                    current_game.print();
-                    println!();
+                    // current_game.print();
+                    // println!();
+
+                    // Fin de la création de la partie ici, ajouter une manière de remplir
+                    // la HashMap de Cluster
+                    games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
+                    games_hashmap.get_mut(&time).unwrap().add_game(current_game);
                 }
             }
         }
+    }
+
+    let mut time_keys: Vec<i32> = Vec::new();
+    for (key, _) in &games_hashmap {
+        time_keys.push(*key);
+    }
+    time_keys.sort();
+    for key in time_keys {
+        let stats: statistics::Statistics = statistics::Statistics::init(games_hashmap[&key].get_games());
+        games_hashmap.get_mut(&key).map(|val| val.add_statistics(stats));
+        println!("{} - {}", key, &games_hashmap[&key].get_statistics().get_avg());
     }
 }

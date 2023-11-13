@@ -12,7 +12,18 @@ pub struct Statistics {
 
 impl Statistics {
 
-    pub fn new(games: &Vec<game::Game>) -> Self {
+    pub fn new() -> Self {
+        Statistics {
+            avg: 0.0,
+            median: 0,
+            var: 0.0,
+            std: 0.0,
+            min: 0,
+            max: 0,
+        }
+    }
+
+    pub fn init(games: &Vec<game::Game>) -> Self {
         let mut avg: f32 = 0.;
         let mut var: f32 = 0.;
         let mut min: i32 = 10000;
@@ -47,5 +58,29 @@ impl Statistics {
             min,
             max,
         }
+    }
+
+    pub fn get_avg(&self) -> f32{
+        self.avg
+    }
+
+    pub fn get_median(&self) -> i32{
+        self.median
+    }
+
+    pub fn get_var(&self) -> f32{
+        self.var
+    }
+
+    pub fn get_std(&self) -> f32{
+        self.std
+    }
+
+    pub fn get_min(&self) -> i32{
+        self.min
+    }
+
+    pub fn get_max(&self) -> i32{
+        self.max
     }
 }

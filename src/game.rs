@@ -62,11 +62,11 @@ impl Game {
     }
 
     // Pretty printer
-    pub fn print(&self) {
-        println!("Game {:>5}", self.id);
-        println!("    White elo: {:>4}", self.white_elo);
-        println!("    Black elo: {:>4}", self.black_elo);
-        println!("    Time control: {:>4}", self.time_control);
-        println!("    Number of moves: {:>3}", self.number_of_moves);
-    }
+    // pub fn print(&self) {
+    //     println!("Game {:>5}", self.id);
+    //     println!("    White elo: {:>4}", self.white_elo);
+    //     println!("    Black elo: {:>4}", self.black_elo);
+    //     println!("    Time control: {:>4}", self.time_control);
+    //     println!("    Number of moves: {:>3}", self.number_of_moves);
+    // }
 }
