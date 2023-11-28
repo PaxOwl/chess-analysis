@@ -1,3 +1,4 @@
+use core::cmp::Ordering;
 use crate::game;
 
 #[derive(Clone)]
@@ -33,11 +34,15 @@ impl Statistics {
         for game in games {
             let moves: i32 = game.get_number_of_moves();
             avg += moves as f32;
-            if max < moves {
-                max = moves;
+            match min.cmp(&moves) {
+                Ordering::Less => {},
+                Ordering::Greater => { min = moves },
+                Ordering::Equal => {},
             }
-            if min > moves {
-                min = moves;
+            match max.cmp(&moves) {
+                Ordering::Less => { max = moves },
+                Ordering::Greater => {},
+                Ordering::Equal => {},
             }
             moves_list.push(moves);
         }
