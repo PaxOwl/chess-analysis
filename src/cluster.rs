@@ -1,34 +1,49 @@
 use crate::game;
-use crate::statistics;
 
 
-#[derive(Clone)]
 pub struct Cluster {
     games: Vec<game::Game>,
-    stats: statistics::Statistics,
+    mean: i32,
+    median: i32,
+    variance: f32,
+    std: f32,
+    min: i32,
+    max: i32,
 }
 
 impl Cluster {
     pub fn new() -> Self {
         Cluster {
             games: vec![],
-            stats: statistics::Statistics::new(),
+            mean: -1,
+            median: -1,
+            variance: -1.,
+            std: -1.0,
+            min: -1,
+            max: -1,
         }
     }
 
-    pub fn add_game(&mut self, game: game::Game) {
-        self.games.push(game)
-    }
+    // pub fn add_game(&mut self, game: game::Game) {
+    //     self.games.push(game)
+    // }
 
-    pub fn add_statistics(&mut self, stats: statistics::Statistics) {
-        self.stats = stats
-    }
+    // pub fn get_games(&self) -> &Vec<game::Game> {
+    //     &self.games
+    // }
 
-    pub fn get_games(&self) -> &Vec<game::Game> {
-        &self.games
-    }
-
-    pub fn get_statistics(&self) -> &statistics::Statistics {
-        &self.stats
+    pub fn get_mean(&mut self) -> &i32 {
+        match &self.mean {
+            -1 => {
+                let mut mean: i32 = 0;
+                for game in &self.games {
+                    mean += game.get_number_of_moves();
+                }
+                mean /= self.games.len() as i32;
+                self.mean = mean;
+            },
+            &_ => {}
+        }
+        &self.mean
     }
 }

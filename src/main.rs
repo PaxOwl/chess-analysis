@@ -69,9 +69,9 @@ fn main() {
         time_keys.push(*key);
     }
     time_keys.sort();
-    for key in time_keys {
-        let stats: statistics::Statistics = statistics::Statistics::init(games_hashmap[&key].get_games());
-        games_hashmap.get_mut(&key).map(|val| val.add_statistics(stats));
-        println!("{} - {}", key, &games_hashmap[&key].get_statistics().get_avg());
-    }
+    // for key in time_keys {
+        // let stats: statistics::Statistics = statistics::Statistics::init(games_hashmap[&key].get_games());
+        // games_hashmap.get_mut(&key).map(|val| val.add_statistics(stats));
+        // println!("{} - {}", key, &games_hashmap[&key].get_statistics().get_avg());
+    // }
 }
