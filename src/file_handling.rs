@@ -61,7 +61,11 @@ pub fn get_elo(line_content: &String) -> i32 {
 
     // Retrieve the TimeControl value as a &str, convert it and store it as an f32 variable
     let str_elo = &line_content[start_byte + 1..start_byte + end_byte + 1];
-    let elo: i32 = str_elo.parse().unwrap();
+    let mut elo: i32 = -1;
+    match str_elo {
+        "?" => {},
+        _ => { elo = str_elo.parse().unwrap() },
+    }
 
     elo
 }

@@ -5,6 +5,7 @@ mod statistics;
 mod cluster;
 // mod plot;
 
+use crate::pretty_printers::table_printer;
 use std::collections::HashMap;
 
 
@@ -19,6 +20,7 @@ fn main() {
     ) {
         for line in lines {
             if let Ok(line_content) = line {
+                // println!("{}", line_content);
                 // Lecture du temps des joueurs pour la partie en cours de traitement
                 let first_word = line_content.as_str().split_whitespace().nth(0);
                 let second_word = line_content.as_str().split_whitespace().nth(1);
@@ -56,7 +58,7 @@ fn main() {
                         // Fin de la création de la partie ici, ajouter une manière de remplir
                         // la HashMap de Cluster
                         games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
-                        games_hashmap.get_mut(&time).unwrap().add_game(current_game);    
+                        games_hashmap.get_mut(&time).unwrap().add_game(current_game);
                     }
                     false => {}
                 }
@@ -69,9 +71,41 @@ fn main() {
         time_keys.push(*key);
     }
     time_keys.sort();
-    // for key in time_keys {
-        // let stats: statistics::Statistics = statistics::Statistics::init(games_hashmap[&key].get_games());
-        // games_hashmap.get_mut(&key).map(|val| val.add_statistics(stats));
-        // println!("{} - {}", key, &games_hashmap[&key].get_statistics().get_avg());
-    // }
+    let mut headers: Vec<String> = Vec::new();
+    let mut data: Vec<Vec<f32>> = Vec::new();
+    headers.push("Time".to_string());
+    headers.push("Games".to_string());
+    headers.push("Percentage".to_string());
+    headers.push("Average".to_string());
+    headers.push("Median".to_string());
+    headers.push("Variance".to_string());
+    headers.push("Standard Deviation".to_string());
+    headers.push("Minimum".to_string());
+    headers.push("Maximum".to_string());
+    for key in &time_keys {
+        let stats: statistics::Statistics = statistics::Statistics::init(games_hashmap[&key].get_games());
+        games_hashmap.get_mut(&key).map(|val| val.add_statistics(stats));
+        let mut data_row: Vec<f32> = Vec::new();
+        let percentage: f32 = games_hashmap[&key].get_games().len() as f32 / game_count as f32 * 100.;
+        data_row.push(*key as f32);
+        data_row.push(games_hashmap[&key].get_games().len() as f32);
+        data_row.push(percentage);
+        data_row.push(games_hashmap[&key].get_statistics().get_avg());
+        data_row.push(games_hashmap[&key].get_statistics().get_median() as f32);
+        data_row.push(games_hashmap[&key].get_statistics().get_var());
+        data_row.push(games_hashmap[&key].get_statistics().get_std());
+        data_row.push(games_hashmap[&key].get_statistics().get_min() as f32);
+        data_row.push(games_hashmap[&key].get_statistics().get_max() as f32);
+        data.push(data_row);
+        // println!("Time : {:>5} - Games : {:>7} - avg : {:>5.2} - med : {:>2} - var : {:>6.2} - std : {:>5.2} - min : {:>2} - max : {:>3}",
+        //     key,
+        //     &games_hashmap[&key].get_games().len(),
+        //     &games_hashmap[&key].get_statistics().get_avg(),
+        //     &games_hashmap[&key].get_statistics().get_median(),
+        //     &games_hashmap[&key].get_statistics().get_var(),
+        //     &games_hashmap[&key].get_statistics().get_std(),
+        //     &games_hashmap[&key].get_statistics().get_min(),
+        //     &games_hashmap[&key].get_statistics().get_max());
+    }
+    table_printer(headers, data);
 }
