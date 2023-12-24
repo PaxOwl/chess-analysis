@@ -20,22 +20,6 @@ impl Game {
     }
 
     // Getters
-    pub fn get_id(&self) -> i32{
-        self.id
-    }
-
-    pub fn get_white_elo(&self) -> i32 {
-        self.white_elo
-    }
-
-    pub fn get_black_elo(&self) -> i32 {
-        self.black_elo
-    }
-
-    pub fn get_time_control(&self) -> i32 {
-        self.time_control
-    }
-
     pub fn get_number_of_moves(&self) -> i32 {
         self.number_of_moves
     }
@@ -60,13 +44,4 @@ impl Game {
     pub fn set_number_of_moves(&mut self, number_of_moves: i32) {
         self.number_of_moves = number_of_moves
     }
-
-    // Pretty printer
-    // pub fn print(&self) {
-    //     println!("Game {:>5}", self.id);
-    //     println!("    White elo: {:>4}", self.white_elo);
-    //     println!("    Black elo: {:>4}", self.black_elo);
-    //     println!("    Time control: {:>4}", self.time_control);
-    //     println!("    Number of moves: {:>3}", self.number_of_moves);
-    // }
 }
