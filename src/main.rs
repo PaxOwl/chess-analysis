@@ -45,6 +45,24 @@ fn main() {
             }
 
             // Elo handling
+            match chunk["WhiteElo"].as_str() {
+                "\"?\"" => {current_game.set_white_elo(-1)},
+                _ => {
+                    current_game
+                        .set_white_elo((&chunk["WhiteElo"][1..&chunk["WhiteElo"].len() - 1])
+                            .parse::<i32>()
+                            .unwrap());
+                }
+            }
+            match chunk["BlackElo"].as_str() {
+                "\"?\"" => {current_game.set_black_elo(-1)},
+                _ => {
+                    current_game
+                        .set_black_elo((&chunk["BlackElo"][1..&chunk["BlackElo"].len() - 1])
+                            .parse::<i32>()
+                            .unwrap());
+                }
+            }
 
             // Moves handling
         }
