@@ -13,7 +13,6 @@ use colored::Colorize;
 
 fn main() {
     let mut games_hashmap:HashMap<i32, cluster::Cluster> = HashMap::new();
-    let mut time: i32 = 0;
     let mut current_game = game::Game::new();
     let mut game_count: i32 = 0;
     if let Ok(file) = File::open(
@@ -23,14 +22,32 @@ fn main() {
         let reader = BufReader::new(file);
 
         let mut lines = reader.lines().map(|line| line.unwrap());
-        let mut i = 0;
+        let mut index = 0;
         while let Some(chunk) = file_handling::read_chunk(&mut lines) {
-            let time = 0;
-            let time_info = &chunk["TimeControl"];
-            println!("{:?}", time_info);
-            i += 1;
-        }
+            // If the game is abandoned, skip it
+            if chunk["Termination"] == "\"Abandoned\"" {
+                continue;
+            }
 
+            // Time handling
+            let mut time = 0;
+            match chunk["TimeControl"].as_str() {
+                "\"-\"" => {},
+                _ => {
+                    current_game
+                        .set_time_control((&chunk["TimeControl"][1..]
+                            .split('+')
+                            .nth(0)
+                            .unwrap())
+                            .parse::<i32>()
+                            .unwrap());
+                }
+            }
+
+            // Elo handling
+
+            // Moves handling
+        }
 
         println!("\n{}", "Program exited normally".green().bold());
 
