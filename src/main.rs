@@ -65,6 +65,8 @@ fn main() {
             }
 
             // Moves handling
+            current_game
+                .set_number_of_moves(file_handling::get_number_of_moves(&chunk["Moves"]));
         }
 
         println!("\n{}", "Program exited normally".green().bold());

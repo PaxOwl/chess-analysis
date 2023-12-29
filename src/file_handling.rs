@@ -24,7 +24,10 @@ where
     while line != "" {
         if let Some(line) = lines.next() {
             if line == "" {
-                lines.next();
+                if let Some(moves) = lines.next() {
+                    chunk.insert(String::from("Moves"), moves);
+                }
+                else {}
                 lines.next();
                 break;
             }
