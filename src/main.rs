@@ -7,64 +7,76 @@ mod cluster;
 
 use crate::pretty_printers::table_printer;
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use colored::Colorize;
 
 
 fn main() {
     let mut games_hashmap:HashMap<i32, cluster::Cluster> = HashMap::new();
-    let mut time: i32 = 0;
     let mut current_game = game::Game::new();
     let mut game_count: i32 = 0;
-    if let Ok(lines) = file_handling::read_lines(
+    if let Ok(file) = File::open(
         // "./res/lichess_db_standard_rated_2016-02.pgn"
         "./res/reduced_data.pgn"
     ) {
-        for line in lines {
-            if let Ok(line_content) = line {
-                // println!("{}", line_content);
-                // Lecture du temps des joueurs pour la partie en cours de traitement
-                let first_word = line_content.as_str().split_whitespace().nth(0);
-                let second_word = line_content.as_str().split_whitespace().nth(1);
-                match first_word {
-                    Some("[TimeControl") => {
-                        time = 0;
-                        match second_word {
-                            Some("\"-\"]") => {},
-                            _ => {
-                                time = file_handling::get_time_control(&line_content);
-                                current_game.set_time_control(time);
-                            }
-                        }
-                    },
-                    Some("[WhiteElo") => current_game
-                        .set_white_elo(file_handling::get_elo(&line_content)),
-                    Some("[BlackElo") => current_game
-                        .set_black_elo(file_handling::get_elo(&line_content)),
-                    _ => {}
-                }
-                // Assignation d'un identificateur pour la partie en cours de traitement
-                current_game.set_id(game_count);
-                match line_content.starts_with('1') {
-                    true => {
-                        current_game.set_number_of_moves(file_handling::get_number_of_moves(&line_content));
-                        match current_game.get_number_of_moves() {
-                            1 => continue,
-                            _ => {}
-                        }
-                        game_count += 1;
-                        current_game.set_id(game_count);
-                        // current_game.print();
-                        // println!();
+        let reader = BufReader::new(file);
 
-                        // Fin de la création de la partie ici, ajouter une manière de remplir
-                        // la HashMap de Cluster
-                        games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
-                        games_hashmap.get_mut(&time).unwrap().add_game(current_game);
-                    }
-                    false => {}
+        let mut lines = reader.lines().map(|line| line.unwrap());
+        let mut index = 0;
+        while let Some(chunk) = file_handling::read_chunk(&mut lines) {
+            // If the game is abandoned, skip it
+            if chunk["Termination"] == "\"Abandoned\"" {
+                continue;
+            }
+
+            // Time handling
+            let mut time = 0;
+            match chunk["TimeControl"].as_str() {
+                "\"-\"" => {},
+                _ => {
+                    time = (&chunk["TimeControl"][1..]
+                            .split('+')
+                            .nth(0)
+                            .unwrap())
+                            .parse::<i32>()
+                            .unwrap();
                 }
             }
+            current_game.set_time_control(time);
+
+            // Elo handling
+            match chunk["WhiteElo"].as_str() {
+                "\"?\"" => {current_game.set_white_elo(-1)},
+                _ => {
+                    current_game
+                        .set_white_elo((&chunk["WhiteElo"][1..&chunk["WhiteElo"].len() - 1])
+                            .parse::<i32>()
+                            .unwrap());
+                }
+            }
+            match chunk["BlackElo"].as_str() {
+                "\"?\"" => {current_game.set_black_elo(-1)},
+                _ => {
+                    current_game
+                        .set_black_elo((&chunk["BlackElo"][1..&chunk["BlackElo"].len() - 1])
+                            .parse::<i32>()
+                            .unwrap());
+                }
+            }
+
+            // Moves handling
+            current_game
+                .set_number_of_moves(file_handling::get_number_of_moves(&chunk["Moves"]));
+
+            // Adding the current game to a cluster using HashMap
+            games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
+            games_hashmap.get_mut(&time).unwrap().add_game(current_game);
         }
+
+        println!("\n{}", "Program exited normally".green().bold());
     }
+
 
     let mut time_keys: Vec<i32> = Vec::new();
     for (key, _) in &games_hashmap {
