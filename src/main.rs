@@ -34,15 +34,15 @@ fn main() {
             match chunk["TimeControl"].as_str() {
                 "\"-\"" => {},
                 _ => {
-                    current_game
-                        .set_time_control((&chunk["TimeControl"][1..]
+                    time = (&chunk["TimeControl"][1..]
                             .split('+')
                             .nth(0)
                             .unwrap())
                             .parse::<i32>()
-                            .unwrap());
+                            .unwrap();
                 }
             }
+            current_game.set_time_control(time);
 
             // Elo handling
             match chunk["WhiteElo"].as_str() {
@@ -67,6 +67,10 @@ fn main() {
             // Moves handling
             current_game
                 .set_number_of_moves(file_handling::get_number_of_moves(&chunk["Moves"]));
+
+            // Adding the current game to a cluster using HashMap
+            games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
+            games_hashmap.get_mut(&time).unwrap().add_game(current_game);
         }
 
         println!("\n{}", "Program exited normally".green().bold());
