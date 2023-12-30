@@ -68,14 +68,14 @@ fn main() {
             current_game
                 .set_number_of_moves(file_handling::get_number_of_moves(&chunk["Moves"]));
 
+            current_game.set_id(game_count);
+
             // Adding the current game to a cluster using HashMap
             games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
             games_hashmap.get_mut(&time).unwrap().add_game(current_game);
 
             game_count += 1;
         }
-
-        println!("\n{}", "Program exited normally".green().bold());
     }
 
 
@@ -121,4 +121,6 @@ fn main() {
         //     &games_hashmap[&key].get_statistics().get_max());
     }
     table_printer(headers, data);
+
+    println!("\n{}", "Program exited normally".green().bold());
 }

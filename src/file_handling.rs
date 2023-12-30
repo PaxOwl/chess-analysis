@@ -1,26 +1,19 @@
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
 use std::collections::HashMap;
 
-/// Read the file in argument and store it line by line
+
+/// Given an Iterator of the current line to be read, returns a HashMap containing data of the current game by ordering
+/// it as chunks
 ///
 /// # Arguments
 ///
-/// `filename` - Name of the file to read
+/// `lines` - &mut I of the current line
 ///
-pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-    where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
-
 pub fn read_chunk<I>(lines: &mut I) -> Option<HashMap<String, String>>
 where
     I: Iterator<Item = String>,
 {
     let mut chunk = HashMap::new();
-    let mut line: String = String::from("dummy");
+    let line: String = String::from("dummy");
     while line != "" {
         if let Some(line) = lines.next() {
             if line == "" {
@@ -42,63 +35,6 @@ where
         }
     }
     Some(chunk)
-}
-
-
-/// When given an &String element with the right format, isolate the `TimeControl` sequence
-/// and returns it as an f32
-///
-///
-/// # Arguments
-///
-/// `ip` - A &String holding the sequence to extract
-///
-/// # Examples
-///
-/// ```
-/// Expected format : [TimeControl "60+0"]
-/// In this case, 60. is returned as an f32
-/// ```
-pub fn get_time_control(line_content: &String) -> i32 {
-    
-    // First instance of " character
-    let start_byte = line_content
-        .find('\"')
-        .unwrap_or(0);
-
-    // First instance of + character
-    let end_byte = line_content
-        .find('+')
-        .unwrap_or(0);
-
-    // Retrieve the TimeControl value as a &str, convert it and store it as an f32 variable
-    let str_time = &line_content[start_byte + 1..end_byte];
-    let time: i32 = str_time.parse().unwrap();
-
-    time
-}
-
-pub fn get_elo(line_content: &String) -> i32 {
-
-    // First instance of " character
-    let start_byte = line_content
-        .find('\"')
-        .unwrap_or(0);
-
-    // First instance of + character
-    let end_byte = line_content[start_byte + 1..]
-        .find('\"')
-        .unwrap_or(0);
-
-    // Retrieve the TimeControl value as a &str, convert it and store it as an f32 variable
-    let str_elo = &line_content[start_byte + 1..start_byte + end_byte + 1];
-    let mut elo: i32 = -1;
-    match str_elo {
-        "?" => {},
-        _ => { elo = str_elo.parse().unwrap() },
-    }
-
-    elo
 }
 
 /// Given an &String containing the information of a game, extract the total number of moves
