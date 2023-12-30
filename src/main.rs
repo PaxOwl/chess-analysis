@@ -23,7 +23,6 @@ fn main() {
         let reader = BufReader::new(file);
 
         let mut lines = reader.lines().map(|line| line.unwrap());
-        let mut index = 0;
         while let Some(chunk) = file_handling::read_chunk(&mut lines) {
             // If the game is abandoned, skip it
             if chunk["Termination"] == "\"Abandoned\"" {
@@ -72,6 +71,8 @@ fn main() {
             // Adding the current game to a cluster using HashMap
             games_hashmap.entry(time).or_insert_with(cluster::Cluster::new);
             games_hashmap.get_mut(&time).unwrap().add_game(current_game);
+
+            game_count += 1;
         }
 
         println!("\n{}", "Program exited normally".green().bold());
