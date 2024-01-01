@@ -24,6 +24,10 @@ impl Game {
         self.number_of_moves
     }
 
+    pub fn get_time_control(&self) -> i32 {
+        self.time_control
+    }
+
     // Setters
     pub fn set_id(&mut self, id: i32) {
         self.id = id
