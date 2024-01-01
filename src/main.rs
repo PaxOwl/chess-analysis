@@ -83,6 +83,12 @@ fn load_data(file: &str) -> HashMap<i32, cluster::Cluster> {
     games_hashmap
 }
 
+/// Given a &String from a .pgn file containing the time allocated to each player, extract its value as an i32
+///
+/// # Arguments
+///
+/// `data_string` - &String containing the time allocated to the players
+///
 fn retrieve_time(data_string: &String) -> i32 {
     let mut time: i32 = 0;
     match data_string.as_str() {
@@ -100,6 +106,12 @@ fn retrieve_time(data_string: &String) -> i32 {
     time
 }
 
+/// Given a &String from a .pgn file containing the elo of a player, extract its value as an i32
+///
+/// # Arguments
+///
+/// `data_string` - &String containing the elo of the player
+///
 fn retrieve_elo(data_string: &String) -> i32 {
     let mut elo: i32 = -1;
     match data_string.as_str() {
