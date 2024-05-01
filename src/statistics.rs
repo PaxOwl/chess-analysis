@@ -89,3 +89,22 @@ impl Statistics {
         self.max
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_statistics() {
+        let mut games: Vec<game::Game> = Vec::new();
+        
+        for i in 2..10 {
+            let mut current_game: game::Game = game::Game::new();
+            current_game.set_number_of_moves(2 * i);
+            games.push(current_game);
+        }
+
+        let stat: Statistics = Statistics::new();
+        stat.init(&games);
+    }
+}

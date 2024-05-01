@@ -9,7 +9,7 @@ mod statistics;
 mod cluster;
 
 
-pub fn run(file: &str) {
+pub fn run_statistics(file: &str) {
     let mut games_hashmap = load_data(file);
 
     let mut time_keys: Vec<i32> = Vec::new();
