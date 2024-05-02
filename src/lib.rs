@@ -5,7 +5,7 @@ use crate::file_handling::load_chess_game;
 
 mod file_handling;
 mod pretty_printers;
-mod game;
+mod game_old;
 mod statistics;
 mod cluster;
 mod board;
@@ -58,7 +58,7 @@ pub fn run_statistics(file: &str) {
 
 fn load_data(file: &str) -> HashMap<i32, cluster::Cluster> {
     let mut games_hashmap:HashMap<i32, cluster::Cluster> = HashMap::new();
-    let mut current_game = game::Game::new();
+    let mut current_game = game_old::Game::new();
     let mut game_count: i32 = 0;
     if let Ok(file) = File::open(file) {
         let reader = BufReader::new(file);

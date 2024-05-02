@@ -1,5 +1,5 @@
 use core::cmp::Ordering;
-use crate::game;
+use crate::game_old;
 
 #[derive(Clone)]
 pub struct Statistics {
@@ -24,7 +24,7 @@ impl Statistics {
         }
     }
 
-    pub fn init(games: &Vec<game::Game>) -> Self {
+    pub fn init(games: &Vec<game_old::Game>) -> Self {
         let mut avg: f32 = 0.;
         let mut var: f32 = 0.;
         let mut min: i32 = 10000;
@@ -96,10 +96,10 @@ mod tests {
 
     #[test]
     fn test_statistics() {
-        let mut games: Vec<game::Game> = Vec::new();
+        let mut games: Vec<game_old::Game> = Vec::new();
         
         for i in 2..10 {
-            let mut current_game: game::Game = game::Game::new();
+            let mut current_game: game_old::Game = game_old::Game::new();
             current_game.set_number_of_moves(2 * i);
             games.push(current_game);
         }

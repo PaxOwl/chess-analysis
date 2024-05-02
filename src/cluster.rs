@@ -1,10 +1,10 @@
-use crate::game;
+use crate::game_old;
 use crate::statistics;
 
 
 #[derive(Clone)]
 pub struct Cluster {
-    games: Vec<game::Game>,
+    games: Vec<game_old::Game>,
     stats: statistics::Statistics,
 }
 
@@ -16,7 +16,7 @@ impl Cluster {
         }
     }
 
-    pub fn add_game(&mut self, game: game::Game) {
+    pub fn add_game(&mut self, game: game_old::Game) {
         self.games.push(game)
     }
 
@@ -24,7 +24,7 @@ impl Cluster {
         self.stats = stats
     }
 
-    pub fn get_games(&self) -> &Vec<game::Game> {
+    pub fn get_games(&self) -> &Vec<game_old::Game> {
         &self.games
     }
 
