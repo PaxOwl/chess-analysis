@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use crate::file_handling::load_chess_game;
 
 mod file_handling;
 mod pretty_printers;
@@ -8,6 +9,13 @@ mod game;
 mod statistics;
 mod cluster;
 
+
+pub fn run_analysis(file: &str) {
+    let current_game: Option<HashMap<String, String>> = load_chess_game(file);
+    for element in current_game.expect("Error during process of the game") {
+        println!("{}: {}", element.0, element.1);
+    }
+}
 
 pub fn run_statistics(file: &str) {
     let mut games_hashmap = load_data(file);
@@ -119,7 +127,7 @@ fn retrieve_elo(data_string: &String) -> i32 {
     elo
 }
 
-/// Given an &String containing the information of a game, extract the total number of moves
+/// Given a &String containing the information of a game, extract the total number of moves
 ///
 /// # Arguments
 ///
