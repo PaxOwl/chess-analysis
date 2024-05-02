@@ -1,14 +1,40 @@
-use std::fmt;
+use colored::Colorize;
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum Color {
+    White,
+    Black,
+}
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum Piece {
     Empty,
-    Pawn,
-    Knight,
-    Bishop,
-    Rook,
-    Queen,
-    King,
+    Pawn(Color),
+    Knight(Color),
+    Bishop(Color),
+    Rook(Color),
+    Queen(Color),
+    King(Color),
+}
+
+impl Piece {
+    fn symbol(&self) -> char {
+        match *self {
+            Piece::Empty => ' ',
+            Piece::Pawn(Color::White) => '♙',
+            Piece::Pawn(Color::Black) => '♟',
+            Piece::Knight(Color::White) => '♘',
+            Piece::Knight(Color::Black) => '♞',
+            Piece::Bishop(Color::White) => '♗',
+            Piece::Bishop(Color::Black) => '♝',
+            Piece::Rook(Color::White) => '♖',
+            Piece::Rook(Color::Black) => '♜',
+            Piece::Queen(Color::White) => '♕',
+            Piece::Queen(Color::Black) => '♛',
+            Piece::King(Color::White) => '♔',
+            Piece::King(Color::Black) => '♚',
+        }
+    }
 }
 
 
@@ -24,52 +50,44 @@ impl Board {
 
         // Fill in the starting positions for white pieces
         squares[0] = [
-            Piece::Rook,
-            Piece::Knight,
-            Piece::Bishop,
-            Piece::Queen,
-            Piece::King,
-            Piece::Bishop,
-            Piece::Knight,
-            Piece::Rook,
+            Piece::Rook(Color::White),
+            Piece::Knight(Color::White),
+            Piece::Bishop(Color::White),
+            Piece::Queen(Color::White),
+            Piece::King(Color::White),
+            Piece::Bishop(Color::White),
+            Piece::Knight(Color::White),
+            Piece::Rook(Color::White),
         ];
-        squares[1] = [Piece::Pawn; 8];
+        squares[1] = [Piece::Pawn(Color::White); 8];
 
         // Fill in the starting positions for black pieces
-        squares[6] = [Piece::Pawn; 8];
+        squares[6] = [Piece::Pawn(Color::Black); 8];
         squares[7] = [
-            Piece::Rook,
-            Piece::Knight,
-            Piece::Bishop,
-            Piece::Queen,
-            Piece::King,
-            Piece::Bishop,
-            Piece::Knight,
-            Piece::Rook,
+            Piece::Rook(Color::Black),
+            Piece::Knight(Color::Black),
+            Piece::Bishop(Color::Black),
+            Piece::Queen(Color::Black),
+            Piece::King(Color::Black),
+            Piece::Bishop(Color::Black),
+            Piece::Knight(Color::Black),
+            Piece::Rook(Color::Black),
         ];
 
         Board { squares }
     }
 
     pub(crate) fn print(&self) {
-        let piece_symbols = [
-            // ('E', Piece::Empty),
-            ('P', Piece::Pawn),
-            ('N', Piece::Knight),
-            ('B', Piece::Bishop),
-            ('R', Piece::Rook),
-            ('Q', Piece::Queen),
-            ('K', Piece::King),
-        ];
-
+        let mut iter: i32 = 8;
         for row in self.squares.iter() {
+            print!("{:<3}", iter.to_string().yellow().bold());
+            iter -= 1;
             for piece in row.iter() {
-                let piece_str = format!("{:?}", piece);
-                let symbol = piece_symbols.iter()
-                    .find_map(|(s, p)| if *p == *piece { Some(*s) } else { None }).unwrap_or(' ');
+                let symbol = piece.symbol();
                 print!("{:<2}", symbol);
             }
             println!();
         }
+        print!("{}", "\n   A B C D E F G H\n".yellow().bold());
     }
 }
