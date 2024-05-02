@@ -8,13 +8,17 @@ mod pretty_printers;
 mod game;
 mod statistics;
 mod cluster;
+mod board;
 
 
 pub fn run_analysis(file: &str) {
-    let current_game: Option<HashMap<String, String>> = load_chess_game(file);
-    for element in current_game.expect("Error during process of the game") {
-        println!("{}: {}", element.0, element.1);
-    }
+    // let current_game: Option<HashMap<String, String>> = load_chess_game(file);
+    // for element in current_game.expect("Error during process of the game") {
+    //     println!("{}: {}", element.0, element.1);
+    // }
+
+    let board = board::Board::new();
+    board.print();
 }
 
 pub fn run_statistics(file: &str) {
