@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use crate::file_handling::load_chess_game;
 
 mod file_handling;
 mod pretty_printers;
@@ -14,14 +13,16 @@ mod game;
 
 
 pub fn run_analysis(file: &str) {
-    let current_game: Option<HashMap<String, String>> = load_chess_game(file);
+    let current_game: Option<HashMap<String, String>> = file_handling::load_chess_game(file);
     // for element in current_game.expect("Error during process of the game") {
     //     println!("{}: {}", element.0, element.1);
     // }
 
-    let board = board::Board::new();
+    let mut board = board::Board::new();
     board.print();
-    game::play(board, current_game.expect("Error during process of the game"));
+    // game::play(board, current_game.expect("Error during process of the game"));
+    board.alter(board::Piece::Rook(board::Color::White), 2, 4);
+    board.print();
 }
 
 pub fn run_statistics(file: &str) {

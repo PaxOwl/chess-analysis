@@ -1,13 +1,13 @@
 use colored::Colorize;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-enum Color {
+pub enum Color {
     White,
     Black,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-enum Piece {
+pub enum Piece {
     Empty,
     Pawn(Color),
     Knight(Color),
@@ -89,5 +89,9 @@ impl Board {
             println!();
         }
         print!("{}", "\n   A B C D E F G H\n\n".yellow().bold());
+    }
+
+    pub(crate) fn alter(&mut self, piece: Piece, x: usize, y: usize) {
+        self.squares[y][x] = piece;
     }
 }
