@@ -7,28 +7,28 @@ pub fn play(board_state: board::Board, input_game: HashMap<String, String>) {
     let moves = moves_to_vector(&input_game["Moves"]);
     // TODO: Iterate over the moves, decode the current move and apply it to the board
     for played_move in moves {
-        let white_move: &str = played_move.0;
-        let black_move: &str = played_move.1;
+        let white_move: &String = &played_move.0;
+        let black_move: &String = &played_move.1;
         decode_move(white_move, &board_state);
         decode_move(black_move, &board_state);
     }
 }
 
-fn moves_to_vector(input_moves: &String) -> Vec<(&str, &str)> {
-    let mut moves: Vec<(&str, &str)> = Vec::new();
+fn moves_to_vector(input_moves: &String) -> Vec<(String, String)> {
+    let mut moves: Vec<(String, String)> = Vec::new();
 
     let v: Vec<&str> = input_moves.as_str().split_whitespace().collect();
     for mut i in (0..v.len()).step_by(3) {
         if i + 2 >= v.len() {
             break;
         }
-        let data_tuple = (v[i + 1], v[i + 2]);
+        let data_tuple = (v[i + 1].to_string(), v[i + 2].to_string());
         moves.push(data_tuple);
     }
     moves
 }
 
-fn decode_move(played_move: &str, board_state: &board::Board) {
+fn decode_move(played_move: &String, board_state: &board::Board) {
         if !played_move.chars().nth(0).expect("Not a character").is_ascii_uppercase() {
             // Pawn
             move_pawn(played_move, board_state);
@@ -48,37 +48,37 @@ fn decode_move(played_move: &str, board_state: &board::Board) {
 
 }
 
-fn move_pawn(played_move: &str, board_state: &board::Board) {
+fn move_pawn(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving Pawn".blue());
 
 }
 
-fn move_knight(played_move: &str, board_state: &board::Board) {
+fn move_knight(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving Knight".blue());
 
 }
 
-fn move_bishop(played_move: &str, board_state: &board::Board) {
+fn move_bishop(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving Bishop".blue());
 
 }
 
-fn move_rook(played_move: &str, board_state: &board::Board) {
+fn move_rook(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving Rook".blue());
 
 }
 
-fn move_queen(played_move: &str, board_state: &board::Board) {
+fn move_queen(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving Queen".blue());
 
 }
 
-fn move_king(played_move: &str, board_state: &board::Board) {
+fn move_king(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Moving King".blue());
 
 }
 
-fn castling(played_move: &str, board_state: &board::Board) {
+fn castling(played_move: &String, board_state: &board::Board) {
     println!("{:<5} -> {}", played_move.yellow(), "Castling: moving King and Rook".blue());
 
 }
