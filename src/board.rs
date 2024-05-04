@@ -88,6 +88,6 @@ impl Board {
             }
             println!();
         }
-        print!("{}", "\n   A B C D E F G H\n".yellow().bold());
+        print!("{}", "\n   A B C D E F G H\n\n".yellow().bold());
     }
 }
