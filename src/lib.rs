@@ -13,7 +13,7 @@ mod game;
 
 
 pub fn run_analysis(file: &str) {
-    let current_game: Option<HashMap<String, String>> = file_handling::load_chess_game(file);
+    // let current_game: Option<HashMap<String, String>> = file_handling::load_chess_game(file);
     // for element in current_game.expect("Error during process of the game") {
     //     println!("{}: {}", element.0, element.1);
     // }
@@ -21,7 +21,13 @@ pub fn run_analysis(file: &str) {
     let mut board = board::Board::new();
     board.print();
     // game::play(board, current_game.expect("Error during process of the game"));
-    board.alter(board::Piece::Rook(board::Color::White), 2, 4);
+    println!();
+    board.move_piece((0, 0), (4, 5));
+    println!();
+    board.print();
+    println!();
+    board.move_piece((1, 0), (7, 5));
+    println!();
     board.print();
 }
 

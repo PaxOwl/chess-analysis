@@ -1,97 +1,160 @@
 use colored::Colorize;
 
+const BOARD_SIZE: usize = 8;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum Color {
+enum Color {
     White,
     Black,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum Piece {
+pub enum PieceType {
     Empty,
-    Pawn(Color),
-    Knight(Color),
-    Bishop(Color),
-    Rook(Color),
-    Queen(Color),
-    King(Color),
+    Pawn,
+    Knight,
+    Bishop,
+    Rook,
+    Queen,
+    King,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+struct Piece {
+    piece_type: PieceType,
+    color: Color,
+    position: (usize, usize), // Position on the board (row, column)
 }
 
 impl Piece {
-    fn symbol(&self) -> char {
-        match *self {
-            Piece::Empty => ' ',
-            Piece::Pawn(Color::White) => '♙',
-            Piece::Pawn(Color::Black) => '♟',
-            Piece::Knight(Color::White) => '♘',
-            Piece::Knight(Color::Black) => '♞',
-            Piece::Bishop(Color::White) => '♗',
-            Piece::Bishop(Color::Black) => '♝',
-            Piece::Rook(Color::White) => '♖',
-            Piece::Rook(Color::Black) => '♜',
-            Piece::Queen(Color::White) => '♕',
-            Piece::Queen(Color::Black) => '♛',
-            Piece::King(Color::White) => '♔',
-            Piece::King(Color::Black) => '♚',
+    // Constructor method to create a new piece instance
+    fn new(piece_type: PieceType, color: Color, position: (usize, usize)) -> Piece {
+        Piece {
+            piece_type,
+            color,
+            position,
         }
+    }
+
+    fn symbol(&self) -> char {
+        match self.color {
+            Color::White => match self.piece_type {
+                PieceType::Pawn => '♙',
+                PieceType::Knight => '♘',
+                PieceType::Bishop => '♗',
+                PieceType::Rook => '♖',
+                PieceType::Queen => '♕',
+                PieceType::King => '♔',
+                _ => '·',
+            },
+            Color::Black => match self.piece_type {
+                PieceType::Pawn => '♟',
+                PieceType::Knight => '♞',
+                PieceType::Bishop => '♝',
+                PieceType::Rook => '♜',
+                PieceType::Queen => '♛',
+                PieceType::King => '♚',
+                _ => '·',
+            },
+        }
+    }
+
+    fn update_position(&mut self, new_position: (usize, usize)) {
+        self.position = new_position;
     }
 }
 
-
 #[derive(Debug)]
 pub(crate) struct Board {
-    squares: [[Piece; 8]; 8],
+    pub(crate) board: [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE],
 }
 
 impl Board {
     pub(crate) fn new() -> Board {
-        // Initialize the board with starting positions
-        let mut squares = [[Piece::Empty; 8]; 8];
+        let mut board = [[None; BOARD_SIZE]; BOARD_SIZE];
 
-        // Fill in the starting positions for white pieces
-        squares[0] = [
-            Piece::Rook(Color::White),
-            Piece::Knight(Color::White),
-            Piece::Bishop(Color::White),
-            Piece::Queen(Color::White),
-            Piece::King(Color::White),
-            Piece::Bishop(Color::White),
-            Piece::Knight(Color::White),
-            Piece::Rook(Color::White),
-        ];
-        squares[1] = [Piece::Pawn(Color::White); 8];
+        // Pieces initialization
+        // Pawns
+        for col in 0..8 {
+            board[1][col] = Some(Piece::new(PieceType::Pawn, Color::White, (1, col)));
+            board[6][col] = Some(Piece::new(PieceType::Pawn, Color::Black, (6, col)));
+        }
 
-        // Fill in the starting positions for black pieces
-        squares[6] = [Piece::Pawn(Color::Black); 8];
-        squares[7] = [
-            Piece::Rook(Color::Black),
-            Piece::Knight(Color::Black),
-            Piece::Bishop(Color::Black),
-            Piece::Queen(Color::Black),
-            Piece::King(Color::Black),
-            Piece::Bishop(Color::Black),
-            Piece::Knight(Color::Black),
-            Piece::Rook(Color::Black),
-        ];
+        //Other pieces
+        board[0][0] = Some(Piece::new(PieceType::Rook, Color::White, (0, 0)));
+        board[0][1] = Some(Piece::new(PieceType::Knight, Color::White, (0, 1)));
+        board[0][2] = Some(Piece::new(PieceType::Bishop, Color::White, (0, 2)));
+        board[0][3] = Some(Piece::new(PieceType::Queen, Color::White, (0, 3)));
+        board[0][4] = Some(Piece::new(PieceType::King, Color::White, (0, 4)));
+        board[0][5] = Some(Piece::new(PieceType::Bishop, Color::White, (0, 5)));
+        board[0][6] = Some(Piece::new(PieceType::Knight, Color::White, (0, 6)));
+        board[0][7] = Some(Piece::new(PieceType::Rook, Color::White, (0, 7)));
 
-        Board { squares }
+        board[7][0] = Some(Piece::new(PieceType::Rook, Color::Black, (7, 0)));
+        board[7][1] = Some(Piece::new(PieceType::Knight, Color::Black, (7, 1)));
+        board[7][2] = Some(Piece::new(PieceType::Bishop, Color::Black, (7, 2)));
+        board[7][3] = Some(Piece::new(PieceType::Queen, Color::Black, (7, 3)));
+        board[7][4] = Some(Piece::new(PieceType::King, Color::Black, (7, 4)));
+        board[7][5] = Some(Piece::new(PieceType::Bishop, Color::Black, (7, 5)));
+        board[7][6] = Some(Piece::new(PieceType::Knight, Color::Black, (7, 6)));
+        board[7][7] = Some(Piece::new(PieceType::Rook, Color::Black, (7, 7)));
+
+        Board { board }
+    }
+
+    fn is_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        // Check if the start and end positions are within the board bounds
+        if from.0 >= 8 || from.1 >= 8 || to.0 >= 8 || to.1 >= 8 {
+            return false;
+        }
+
+        // Check if the end position is not occupied by another piece
+        if self.board[to.0][to.1] != None {
+            return false;
+        }
+
+        // You can add more complex validation logic here, such as checking for piece-specific movement rules
+
+        // If none of the conditions above are met, the move is valid
+        true
+    }
+
+    pub fn move_piece(&mut self, from: (usize, usize), to: (usize, usize)) {
+        println!("Moving {:?} {:?} to {:?}",
+                 self.board[from.0][from.1].unwrap().color,
+                 self.board[from.0][from.1].unwrap().piece_type,
+                 to);
+        if !self.is_move_valid(from, to) {
+            println!("{}", "Invalid move.".red());
+            return;
+        }
+
+        if let Some(piece) = self.board[from.0][from.1] {
+            self.board[to.0][to.1] = Some(piece);
+            self.board[from.0][from.1] = None;
+            println!("{}", "Valid move.".green());
+        } else {
+            println!("No piece found at the specified position.");
+        }
     }
 
     pub(crate) fn print(&self) {
-        let mut iter: i32 = 8;
-        for row in self.squares.iter() {
-            print!("{:<3}", iter.to_string().yellow().bold());
-            iter -= 1;
-            for piece in row.iter() {
-                let symbol = piece.symbol();
-                print!("{:<2}", symbol);
+        println!("{}", " ------------------".yellow());
+        let mut row_index: usize = 8;
+        for row in self.board.iter() {
+            print!("{}{}", row_index.to_string().blue(), "|".yellow());
+            for square in row.iter() {
+                match square {
+                    Some(piece) => print!("{: <2}", piece.symbol()),
+                    None => print!("{: <2}", ' '),
+                }
             }
-            println!();
-        }
-        print!("{}", "\n   A B C D E F G H\n\n".yellow().bold());
-    }
+            row_index -= 1;
+            println!("{}", "|".yellow());
 
-    pub(crate) fn alter(&mut self, piece: Piece, x: usize, y: usize) {
-        self.squares[y][x] = piece;
+        }
+        println!("{}", " ------------------".yellow());
+        println!("{}", "  a b c d e f g h".blue());
+
     }
 }
