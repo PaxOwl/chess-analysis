@@ -11,7 +11,6 @@ enum Color {
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum PieceType {
-    Empty,
     Pawn,
     Knight,
     Bishop,
@@ -117,12 +116,11 @@ impl Board {
         // You can add more complex validation logic here, such as checking for piece-specific movement rules
         match self.board[from.0][from.1].unwrap().piece_type {
             PieceType::Pawn => { if !self.is_pawn_move_valid(from, to) {return false} },
-            PieceType::Knight => { if !self.is_king_move_valid(from, to) {return false} },
+            PieceType::Knight => { if !self.is_knight_move_valid(from, to) {return false} },
             PieceType::Bishop => { if !self.is_bishop_move_valid(from, to) {return false} },
             PieceType::Rook => { if !self.is_rook_move_valid(from, to) {return false} },
             PieceType::Queen => { if !self.is_queen_move_valid(from, to) {return false} },
             PieceType::King => { if !self.is_king_move_valid(from, to) {return false} },
-            PieceType::Empty => {},
         }
         // If none of the conditions above are met, the move is valid
         true
@@ -150,7 +148,13 @@ impl Board {
     }
 
     fn is_knight_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
-        true
+        if ((from.0 as i32 - to.0 as i32).abs() == 1
+            && (from.1 as i32 - to.1 as i32).abs() == 2)
+            || ((from.0 as i32 - to.0 as i32).abs() == 2
+            && (from.1 as i32 - to.1 as i32).abs() == 1) {
+            return true
+        }
+        false
     }
 
     fn is_bishop_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
