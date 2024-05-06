@@ -1,4 +1,5 @@
 use colored::Colorize;
+use crate::board;
 
 const BOARD_SIZE: usize = 8;
 
@@ -114,15 +115,65 @@ impl Board {
         }
 
         // You can add more complex validation logic here, such as checking for piece-specific movement rules
-
+        match self.board[from.0][from.1].unwrap().piece_type {
+            PieceType::Pawn => { if !self.is_pawn_move_valid(from, to) {return false} },
+            PieceType::Knight => { if !self.is_king_move_valid(from, to) {return false} },
+            PieceType::Bishop => { if !self.is_bishop_move_valid(from, to) {return false} },
+            PieceType::Rook => { if !self.is_rook_move_valid(from, to) {return false} },
+            PieceType::Queen => { if !self.is_queen_move_valid(from, to) {return false} },
+            PieceType::King => { if !self.is_king_move_valid(from, to) {return false} },
+            PieceType::Empty => {},
+        }
         // If none of the conditions above are met, the move is valid
         true
     }
 
+    fn is_pawn_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        // Moving horizontally
+        if from.1 != to.1 { return false }
+        // Moving more than 2 squares vertically
+        if (from.0 as i32 - to.0 as i32).abs() > 2 { return false}
+        // Moving 2 squares vertically when not on initial position
+        match self.board[from.0][from.1].unwrap().color {
+            Color::White => {
+                if from.0 == to.0 && from.1 == to.1 + 2 {
+                    if !(from.1 == 1) { return false }
+                }
+            },
+            Color::Black => {
+                if from.0 == to.0 && from.1 == to.1 - 2 {
+                    if !(from.1 == 6) { return false }
+                }
+            }
+        }
+        true
+    }
+
+    fn is_knight_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        true
+    }
+
+    fn is_bishop_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        true
+    }
+
+    fn is_rook_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        true
+    }
+
+    fn is_queen_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        true
+    }
+
+    fn is_king_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        true
+    }
+
     pub fn move_piece(&mut self, from: (usize, usize), to: (usize, usize)) {
-        println!("Moving {:?} {:?} to {:?}",
+        println!("Moving {:?} {:?} in {:?} to {:?}",
                  self.board[from.0][from.1].unwrap().color,
                  self.board[from.0][from.1].unwrap().piece_type,
+                 self.board[from.0][from.1].unwrap().position,
                  to);
         if !self.is_move_valid(from, to) {
             println!("{}", "Invalid move.".red());
