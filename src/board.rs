@@ -158,7 +158,10 @@ impl Board {
     }
 
     fn is_bishop_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
-        true
+        if (from.0 as i32 - to.0 as i32).abs() == (from.1 as i32 - to.1 as i32).abs() {
+            return true
+        }
+        false
     }
 
     fn is_rook_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
