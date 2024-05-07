@@ -182,6 +182,9 @@ impl Board {
     }
 
     fn is_king_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
+        if (from.0 as i32 - to.0 as i32).abs() > 1 || (from.1 as i32 - to.1 as i32).abs() > 1 {
+            return false
+        }
         true
     }
 
