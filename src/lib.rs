@@ -22,8 +22,8 @@ pub fn run_analysis(file: &str) {
     board.print();
     // game::play(board, current_game.expect("Error during process of the game"));
     println!();
-    board.move_piece((0, 0), (2, 0));
-    board.move_piece((2, 0), (2, 5));
+    board.move_piece((0, 3), (2, 3));
+    board.move_piece((2, 3), (3, 4));
     println!();
     board.print();
 }

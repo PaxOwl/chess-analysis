@@ -172,7 +172,13 @@ impl Board {
     }
 
     fn is_queen_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
-        true
+        if (from.0 as i32 - to.0 as i32).abs() == (from.1 as i32 - to.1 as i32).abs() {
+            return true
+        }
+        if !((from.0 as i32 - to.0 as i32).abs() > 0 && (from.1 as i32 - to.1 as i32).abs() > 0) {
+            return true
+        }
+        false
     }
 
     fn is_king_move_valid(&self, from: (usize, usize), to: (usize, usize)) -> bool {
