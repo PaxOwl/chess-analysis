@@ -113,7 +113,7 @@ impl Board {
             return false;
         }
 
-        // You can add more complex validation logic here, such as checking for piece-specific movement rules
+        // Checking for piece-specific movement rules
         match self.board[from.0][from.1].unwrap().piece_type {
             PieceType::Pawn => { if !self.is_pawn_move_valid(from, to) {return false} },
             PieceType::Knight => { if !self.is_knight_move_valid(from, to) {return false} },
@@ -189,22 +189,22 @@ impl Board {
     }
 
     pub fn move_piece(&mut self, from: (usize, usize), to: (usize, usize)) {
-        println!("Moving {:?} {:?} in {:?} to {:?}",
-                 self.board[from.0][from.1].unwrap().color,
-                 self.board[from.0][from.1].unwrap().piece_type,
-                 self.board[from.0][from.1].unwrap().position,
-                 to);
-        if !self.is_move_valid(from, to) {
-            println!("{}", "Invalid move.".red());
-            return;
-        }
-
         if let Some(piece) = self.board[from.0][from.1] {
+            println!("Moving {:?} {:?} in {:?} to {:?}",
+                     self.board[from.0][from.1].unwrap().color,
+                     self.board[from.0][from.1].unwrap().piece_type,
+                     self.board[from.0][from.1].unwrap().position,
+                     to);
+            if !self.is_move_valid(from, to) {
+                println!("{}", "Invalid move.".red());
+                return;
+            }
             self.board[to.0][to.1] = Some(piece);
             self.board[from.0][from.1] = None;
             println!("{}", "Valid move.".green());
         } else {
             println!("No piece found at the specified position.");
+            return;
         }
     }
 
